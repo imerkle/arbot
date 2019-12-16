@@ -53,9 +53,9 @@ curl -X GET http://localhost:3001/get_current_streams
 
 ## Internal API
 
-Sometimes you want to modify the data returned from endpoints. 
+Sometimes you want to modify the data returned from endpoints before archiving it to arweave. 
 
-[`archiveApis`](https://github.com/imerkle/arbot/blob/92fe24a7dd2a483cb47947e61412cf34b0b280ce/src/arweave.ts#L58) function in [`ArweaveBot`](https://github.com/imerkle/arbot/blob/92fe24a7dd2a483cb47947e61412cf34b0b280ce/src/arweave.ts#L20) class accepts a second `internals` parameter which is an array of objects containing url(`url`) and a custom callback function(`fn`) which modifies the data returned from json endpoint.
+[`archiveApis`](https://github.com/imerkle/arbot/blob/92fe24a7dd2a483cb47947e61412cf34b0b280ce/src/arweave.ts#L58) function in [`ArweaveBot`](https://github.com/imerkle/arbot/blob/92fe24a7dd2a483cb47947e61412cf34b0b280ce/src/arweave.ts#L20) class accepts a second `internals` parameter which is an array of objects containing url(`url`) and a custom callback function(`fn`) which modifies the data returned from json endpoint before archiving it to arweave.
 
 ```
 [{
