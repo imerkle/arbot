@@ -58,19 +58,8 @@ export default class ArweaveBot {
     archiveApis = async (archive: boolean = true, internals: Array<any> = []) => {
         let datas: Array<any> = [];
         if (archive) {
-            const x = await this.arweave.arql({
-                op: "and",
-                ...APP_ARQL,
-                expr2: {
-                    op: "equals",
-                    expr1: "Content-Kind",
-                    expr2: "Archive-Url"
-                },
-            });
-            datas = await Promise.all(x.map(async (o: any) => {
-                const tx = await this.arweave.transactions.get(o);
-                return { id: tx.id, ...JSON.parse(tx.get('data', { decode: true, string: true })) }
-            }));
+            //@ts-ignore
+            datas = this.getArchiveUrls();
         }
         const internal_fns1 = new Array(uniq(datas, "url").length).fill(function (a: any) { return a });
 
@@ -81,14 +70,18 @@ export default class ArweaveBot {
         // @ts-ignore
         datas = uniq(datas.concat(internals), "url");
         return await Promise.all(datas.map(async (o: any, i: any) => {
-            const data = internal_fns[i]((await axios.get(o.url)).data);
-            return await this.createTx(data,
-                {
-                    "Content-Kind": "Archive-Data",
-                    "Archive-Id": o.id,
-                    "from": this.address,
-                }
-            )
+            try {
+                const data = internal_fns[i]((await axios.get(o.url)).data);
+                return await this.createTx(data,
+                    {
+                        "Content-Kind": "Archive-Data",
+                        "Archive-Id": o.id,
+                        "from": this.address,
+                    }
+                )
+            } catch (e) {
+                return "Unknown Stream Error"
+            }
         }));
     }
     createTx = async (data: any, tags: Kv): Promise<string> => {
@@ -105,8 +98,25 @@ export default class ArweaveBot {
         transaction.last_tx = anchor_id
 
         await this.arweave.transactions.sign(transaction, jwk)
-        //const response = await this.arweave.transactions.post(transaction)
+        const response = await this.arweave.transactions.post(transaction)
         return transaction.id;
+    }
+    getArchiveUrls = async () => {
+        let datas: Array<any> = [];
+        const x = await this.arweave.arql({
+            op: "and",
+            ...APP_ARQL,
+            expr2: {
+                op: "equals",
+                expr1: "Content-Kind",
+                expr2: "Archive-Url"
+            },
+        });
+        datas = await Promise.all(x.map(async (o: any) => {
+            const tx = await this.arweave.transactions.get(o);
+            return { id: tx.id, ...JSON.parse(tx.get('data', { decode: true, string: true })) }
+        }));
+        return datas;
     }
 }
 //@ts-ignore

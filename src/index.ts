@@ -20,6 +20,14 @@ app.post('/add', async (req: Request, res: Response) => {
         res.send({ error: "Invalid query 'url' params not found" });
     }
 });
+app.get('/get_current_streams', async (req: Request, res: Response) => {
+    try {
+        const datas = await arBot.getArchiveUrls()
+        res.send(datas);
+    } catch (e) {
+        res.send({ error: e.message })
+    }
+});
 
 
 app.listen(process.env.PORT || 3001, () =>
