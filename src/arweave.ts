@@ -59,7 +59,7 @@ export default class ArweaveBot {
         let datas: Array<any> = [];
         if (archive) {
             //@ts-ignore
-            datas = this.getArchiveUrls();
+            datas = await this.getArchiveUrls();
         }
         const internal_fns1 = new Array(uniq(datas, "url").length).fill(function (a: any) { return a });
 

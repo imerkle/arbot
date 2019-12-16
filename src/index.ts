@@ -33,7 +33,6 @@ app.get('/get_current_streams', async (req: Request, res: Response) => {
 app.listen(process.env.PORT || 3001, () =>
     console.log(`Arbot listening on port ${process.env.PORT || 3001}!`),
 );
-
 //cron job
 cron.schedule('0 * * * *', async () => {
     //'running a task every hour at 0th minute'
